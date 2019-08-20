@@ -15,18 +15,24 @@ const getExchangeRate = async (fromCurrency, toCurrency)=>{
 }
 
 const getCountries=async(toCurrency)=>{
-    const response =await axios.get(`https://restcountries.eu/rest/v2/currency/${toCurrency}`)
-    return response.data.map(country=>country.name);
+    try{
+        const response =await axios.get(`https://restcountries.eu/rest/v2/currency/${toCurrency}`)
+        return response.data.map(country=>country.name);
+    }
+    catch(error){
+            throw new Error(`Unable to get countries that use currency ${toCurrency}`)
+    }
+    
 }
 
 const convertCurrency=async(fromCurrency,toCurrency,amount)=>{
-    const exchangeRate= await getExchangeRate(fromCurrency,toCurrency)
     const countries=await getCountries(toCurrency)
+    const exchangeRate= await getExchangeRate(fromCurrency,toCurrency)
     const convertedAmount= (amount*exchangeRate).toFixed(2)
     return `${amount} ${fromCurrency} is worth ${convertedAmount} ${toCurrency}. You can spend these in the following countries: ${countries}`;
 }
 
-convertCurrency('USD','GBP',30)
+convertCurrency('USD','123',30)
     .then((message)=>{
         console.log(message)
     }).catch((error)=>{
